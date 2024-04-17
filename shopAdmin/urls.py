@@ -21,5 +21,6 @@ from shopAdmin.views import shop_Admin
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include("api.urls")),
+    path('api/auth/', include('users.urls')),
 
 ]
