@@ -5,15 +5,17 @@
 #     return HttpResponse("Hello Admin")
 
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from .models import Shop
 from .serializers import ShopSerializer
 from rest_framework import status,serializers
 from django.core.exceptions import ObjectDoesNotExist
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
  
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def ApiOverview(request):
     api_urls = {
         'all_items': '/',
@@ -28,6 +30,7 @@ def ApiOverview(request):
 
 #Adding new shop
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def add_shop_details(request):
     shop=ShopSerializer(data=request.data)
 
@@ -39,35 +42,44 @@ def add_shop_details(request):
         shop.save()
         return Response(shop.data)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        print(shop.errors)
+        return Response(status=status.HTTP_400_BAD_REQUEST,)
     
 
 
 
 #view shop
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def view_shop(request):
 
-    if request.query_params:
-        shop=Shop.objects.filter(**request.query_params.dict())
+    paginator=PageNumberPagination()
+    paginator.page_size=5
 
-    else:
-        shop=Shop.objects.all()
+    # if request.query_params:
+    #     shop=Shop.objects.filter(**request.query_params.dict())
 
-    if shop:
-        serializer=ShopSerializer(shop,many=True)
-        return Response(serializer.data)
-    else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    # else:
+    shop=Shop.objects.all()
+
+    # if shop:
+    #     serializer=ShopSerializer(shop,many=True)
+    #     return Response(serializer.data)
+    result_page=paginator.paginate_queryset(shop,request)
+    serializer=ShopSerializer(result_page,many=True)
+
+    # else:
+    return paginator.get_paginated_response(serializer.data)
 
 
 #update shop details
 @api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
 def update_shop_details(request,pk):
     try:
        shop=Shop.objects.get(pk=pk)
     except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND,data="Error finding shop")
 
     data=ShopSerializer(instance=shop,data=request.data,partial=True)
 
@@ -80,6 +92,7 @@ def update_shop_details(request,pk):
 
 #Delete shop
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delete_shop(request, pk):
     try:
         shop = Shop.objects.get(pk=pk)

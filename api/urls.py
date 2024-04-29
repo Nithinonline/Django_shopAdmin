@@ -6,5 +6,5 @@ urlpatterns = [
     path('create/',views.add_shop_details,name='add-shop'),
     path('all/',views.view_shop,name='view-shops'),
     path('update/<int:pk>/',views.update_shop_details,name='update-shop'),
-    path('shop/<int:pk>/delete',views.delete_shop,name='delete-shop')
+    path('delete/<int:pk>/',views.delete_shop,name='delete-shop')
 ]
