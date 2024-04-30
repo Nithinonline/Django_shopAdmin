@@ -42,7 +42,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'api',
     'users',
-    'corsheaders'
+    'corsheaders',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'shopAdmin.urls'
@@ -69,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request'
             ],
         },
     },
@@ -151,6 +159,14 @@ MEDIA_URL="/media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTHENTICATION_BACKENDS = [
+    
+    'django.contrib.auth.backends.ModelBackend',
+
+    'allauth.account.auth_backends.AuthenticationBackend',
+  
+]
+
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -164,3 +180,24 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '476766832814-9f968vfp1dhp5cla0mg7c1tek767q795.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+SITE_ID = 1 
+
+SOCIALACCOUNT_QUERY_EMAIL=True
+LOGIN_REDIRECT_URL="http://localhost:4200/register"
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}

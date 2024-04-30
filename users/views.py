@@ -62,3 +62,21 @@ def user_logout(request):
             return Response({'message:"successfully logged out'},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error":str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+#SSO Login
+@api_view(['POST'])
+def sso_user_login(request):
+    email = request.data.get('email')
+    user=CustomUser.objects.get(email=email)
+    if user:
+        print("User already exist")
+        # serializer=UserSerializer(user)
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+
+    if not user:
+        return Response('user does not exist',status=status.HTTP_401_UNAUTHORIZED)
+
+
+    

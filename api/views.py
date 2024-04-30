@@ -50,7 +50,7 @@ def add_shop_details(request):
 
 #view shop
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def view_shop(request):
 
     paginator=PageNumberPagination()
