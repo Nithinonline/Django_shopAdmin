@@ -71,7 +71,6 @@ def sso_user_login(request):
     user=CustomUser.objects.get(email=email)
     if user:
         print("User already exist")
-        # serializer=UserSerializer(user)
         token, _ = Token.objects.get_or_create(user=user)
         return Response({'token': token.key}, status=status.HTTP_200_OK)
 
