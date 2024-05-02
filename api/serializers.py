@@ -6,4 +6,4 @@ from .models import Shop
 class ShopSerializer(serializers.ModelSerializer): 
     class Meta:
         model=Shop
-        fields=('name','address','city','phone','image','id')
+        fields=('name','address','city','phone','image','id','user')

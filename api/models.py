@@ -11,6 +11,7 @@ class Shop(models.Model):
     city=models.CharField(max_length=30)
     phone=models.CharField(max_length=10,default='N/A')
     image=models.ImageField(default='default.jpg',upload_to='media/')
+    user=models.CharField(null=True)
 
 
 

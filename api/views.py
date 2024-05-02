@@ -33,6 +33,7 @@ def ApiOverview(request):
 @permission_classes([IsAuthenticated])
 def add_shop_details(request):
     shop=ShopSerializer(data=request.data)
+    print(shop)
 
     #validating for already existing data
     if Shop.objects.filter(**request.data).exists():
@@ -80,14 +81,16 @@ def update_shop_details(request,pk):
        shop=Shop.objects.get(pk=pk)
     except:
         return Response(status=status.HTTP_404_NOT_FOUND,data="Error finding shop")
-
-    data=ShopSerializer(instance=shop,data=request.data,partial=True)
-
-    if data.is_valid():
-        data.save()
-        return Response(data.data)
+    if shop.user==str(request.user):
+       data=ShopSerializer(instance=shop,data=request.data,partial=True)
+       if data.is_valid():
+          data.save()
+          return Response(data.data)
+       else:
+          return Response(data.errors,status=status.HTTP_400_BAD_REQUEST)
+       
     else:
-        return Response(data.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error":"you are not allowd to update"},status=status.HTTP_403_FORBIDDEN)   
     
 
 #Delete shop

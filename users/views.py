@@ -47,7 +47,8 @@ def user_login(request):
 
         if user:
             token, _ = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            serailizer=UserSerializer(user)
+            return Response({'token': token.key,'user':serailizer.data}, status=status.HTTP_200_OK)
 
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
   
@@ -71,9 +72,9 @@ def sso_user_login(request):
     user=CustomUser.objects.get(email=email)
     if user:
         print("User already exist")
+        serializedUser=UserSerializer(user)
         token, _ = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
-
+        return Response({'user': serializedUser.data, 'token': token.key}, status=status.HTTP_200_OK)
     if not user:
         return Response('user does not exist',status=status.HTTP_401_UNAUTHORIZED)
 
