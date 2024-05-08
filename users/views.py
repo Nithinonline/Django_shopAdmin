@@ -22,6 +22,7 @@ from rest_framework.permissions import IsAuthenticated
 def register_user(request):
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
