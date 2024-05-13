@@ -10,7 +10,7 @@ class Shop(models.Model):
     address=models.TextField()
     city=models.CharField(max_length=30)
     phone=models.CharField(max_length=10,default='N/A')
-    image=models.ImageField(default='default.jpg',upload_to='media/')
+    # image=models.ImageField(default='default.jpg',upload_to='media/')
     user=models.CharField(null=True)
 
 
@@ -20,12 +20,23 @@ class Shop(models.Model):
     def __str__(self) -> str:
         return self.name
     
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
  
-        img=Image.open(self.image.path)
+    #     img=Image.open(self.image.path)
 
-        if img.height>300 or img.width>300:
-            output_size=(300,300)
-            img.thumbnail(output_size)
-            img.save(self.image.path)    
+    #     if img.height>300 or img.width>300:
+    #         output_size=(300,300)
+    #         img.thumbnail(output_size)
+    #         img.save(self.image.path)    
+
+
+
+class ShopImages(models.Model):
+    shop=models.ForeignKey(Shop, on_delete=models.CASCADE)
+    image=models.ImageField(default='default.jpg',upload_to='media/')
+
+
+    def __str__(self):
+        return "%s" % (self.name)
+    

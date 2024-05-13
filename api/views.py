@@ -3,7 +3,7 @@
 
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
-from .models import Shop
+from .models import Shop,ShopImages
 from .serializers import ShopSerializer
 from rest_framework import status,serializers
 from django.core.exceptions import ObjectDoesNotExist
@@ -121,6 +121,8 @@ class shopViewSet(viewsets.ModelViewSet):
     pagination_class=CustomPagination
 
    
+   
+        
    
 
 
