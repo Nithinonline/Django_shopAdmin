@@ -33,10 +33,17 @@ class Shop(models.Model):
 
 
 class ShopImages(models.Model):
-    shop=models.ForeignKey(Shop, on_delete=models.CASCADE)
+    # shop_name=models.ForeignKey(Shop, on_delete=models.CASCADE)
+    shop=models.ManyToManyField(Shop)
     image=models.ImageField(default='default.jpg',upload_to='media/')
 
 
     def __str__(self):
-        return "%s" % (self.name)
+        return "%s" % (self.image)
+    
+
+
+# class ShopImageMapping(models.Model):
+#     shop=models.ForeignKey(Shop,on_delete=models.CASCADE)
+#     ShopImage=models.ForeignKey(ShopImages, on_delete=models.CASCADE)
     
