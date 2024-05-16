@@ -2,6 +2,7 @@ from django.urls import path,include
 from . import views
 from rest_framework.routers import DefaultRouter
 from .views import shopViewSet
+from .views import delete_shop,delete_shop_image
 
 
 router=DefaultRouter()
@@ -17,5 +18,8 @@ router.register(r'shops',shopViewSet)
 
 
 urlpatterns = [
-    path('',include(router.urls))
+    path('',include(router.urls)),
+    path('delete/<int:pk>',delete_shop,name='delete-shop'),
+    path('deleteImage/<int:pk>',delete_shop_image,name='delete-shop-image')
+
 ]
