@@ -137,9 +137,7 @@ class shopViewSet(viewsets.ModelViewSet):
     permission_classes=[IsAuthenticated]
     pagination_class=CustomPagination
 
-    def destroy(self, request,*args, **kwargs):
-        print("delete")
-
+   
 
 
     # def partial_update(self, request, *args, **kwargs):
