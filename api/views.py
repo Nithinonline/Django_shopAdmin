@@ -10,6 +10,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # @api_view(['GET'])
@@ -101,7 +103,9 @@ def delete_shop(request, pk):
         return Response(data={"message": "Deleted successfully"})
     except ObjectDoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)  
-	
+
+
+#Delete shop Photo
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_shop_image(request, pk):
@@ -110,7 +114,32 @@ def delete_shop_image(request, pk):
         shop_image.delete()
         return Response(data={"message": "Image Deleted successfully"})
     except ObjectDoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)     
+        return Response(status=status.HTTP_404_NOT_FOUND)  
+    
+
+#send mail    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  
+def send_email(request):
+    name=request.data.get('name')
+    support_message=request.data.get('message')
+    user_email=request.data.get('email')
+    subject="Support"
+    email_from=settings.EMAIL_HOST_USER
+
+    if not name or not support_message or not user_email:
+         return Response(data="Missing required fields", status=status.HTTP_400_BAD_REQUEST)
+    
+    message=f"User with username {name} and email: {user_email} need support on:\n {support_message}"
+    recipient_list=["webdevnithin@gmail.com"]
+    try:
+        send_mail(subject, message, email_from, recipient_list)
+        return Response(data="Mail send successfully", status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response(data=str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
 # @api_view(['PATCH'])
 # @permission_classes([IsAuthenticated])
 # def delete_image(request,pk):
@@ -140,46 +169,6 @@ class shopViewSet(viewsets.ModelViewSet):
    
 
 
-    # def partial_update(self, request, *args, **kwargs):
-    #     print(request.data)
-    #     id = self.kwargs.get('pk')
-    #     try:
-    #         shop = Shop.objects.get(pk=id)
-    #     except Shop.DoesNotExist:
-    #         return Response(status=status.HTTP_404_NOT_FOUND, data="Error finding shop")
-
-    #     shop_serializer = ShopSerializer(instance=shop, data=request.data, partial=True)
-    #     if not shop_serializer.is_valid():
-    #         return Response(shop_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #     shop_instance = shop_serializer.save()
-
-    #     uploaded_images = request.FILES.getlist('images')
-
-    #     # If no images are uploaded, skip deletion process
-    #     if uploaded_images:
-    #         uploaded_image_names = [image.name for image in uploaded_images]
-
-    #         existing_images = ShopImages.objects.filter(shop=shop_instance)
-            
-    #         for image in existing_images:
-    #             if image.image.name not in uploaded_image_names:
-    #                 image.delete()
-
-    #     for image in uploaded_images:
-    #         shop_image_serializer = ShopImageSerializer(data={'image': image, 'shop': [shop_instance.pk]}, partial=True)
-    #         if shop_image_serializer.is_valid():
-    #             shop_image_serializer.save()
-    #         else:
-    #             return Response(shop_image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    #     return Response(shop_serializer.data)
-
-    
-
-
-
-    
-    
             
     
 
