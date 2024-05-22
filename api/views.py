@@ -12,6 +12,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from rest_framework import filters
 
 
 # @api_view(['GET'])
@@ -130,6 +133,11 @@ def send_email(request):
     if not name or not support_message or not user_email:
          return Response(data="Missing required fields", status=status.HTTP_400_BAD_REQUEST)
     
+    try:
+        validate_email(user_email)
+    except ValidationError:
+        return Response(data="Invalid email address", status=status.HTTP_400_BAD_REQUEST)
+    
     message=f"User with username {name} and email: {user_email} need support on:\n {support_message}"
     recipient_list=["webdevnithin@gmail.com"]
     try:
@@ -160,14 +168,49 @@ class CustomPagination(PageNumberPagination):
     # page_size_query_param = 'page'
     max_page_size = 100
 
+
 class shopViewSet(viewsets.ModelViewSet):
     queryset=Shop.objects.all()
     serializer_class=ShopSerializer
     permission_classes=[IsAuthenticated]
     pagination_class=CustomPagination
+    search_fields = ['name']
 
+    # def list(self, request):
+    #     if request.query_params:
+    #       filter = filters.SearchFilter()
+    #       queryset = filter.filter_queryset(request, Shop.objects.all(), self)   
+    #       serializer = ShopSerializer(queryset,many=True, context={'request': request})
+    #       return self.get_paginated_response(serializer.data)
+    #     shops=Shop.objects.all()
+    #     shop_serializer=ShopSerializer(shops,many=True)
+    #     return self.get_paginated_response(shop_serializer.data)
    
+    # def list(self, request):
+    #     queryset = self.get_queryset()
+    #     print(queryset)
+    #     if 'search' in request.query_params:
+    #         search_term = request.query_params.get('search')
+    #         queryset = queryset.filter(name__icontains=search_term) 
+    #         print(queryset) 
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
 
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
+
+    def list(self,request):
+        queryset=self.get_queryset()
+        if 'search' in request.query_params:
+            search_term=request.query_params.get('search')
+            queryset=queryset.filter(name__contains=search_term)
+        page=self.paginate_queryset(queryset)        
+        serializer=self.get_serializer(page,many=True)   
+        return self.get_paginated_response(serializer.data)        
+
+         
 
             
     
