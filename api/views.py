@@ -203,9 +203,15 @@ class shopViewSet(viewsets.ModelViewSet):
 
     def list(self,request):
         queryset=self.get_queryset()
-        if 'search' in request.query_params:
-            search_term=request.query_params.get('search')
+        if 'name' in request.query_params:
+            search_term=request.query_params.get('name')
             queryset=queryset.filter(name__contains=search_term)
+        if 'city' in request.query_params:
+            search_term=request.query_params.get('city')
+            queryset=queryset.filter(city__contains=search_term) 
+        if 'phone' in request.query_params:
+            search_term=request.query_params.get('phone')
+            queryset=queryset.filter(phone__contains=search_term)                       
         page=self.paginate_queryset(queryset)        
         serializer=self.get_serializer(page,many=True)   
         return self.get_paginated_response(serializer.data)        
